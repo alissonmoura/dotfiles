@@ -1,2 +1,2 @@
 # dotfiles
-These are my dot files for vim, i3 and zsh.
+These are my dot files for vim, i3, zsh and git.
