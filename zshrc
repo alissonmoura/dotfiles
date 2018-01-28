@@ -1,10 +1,10 @@
 # Path to your oh-my-zsh installation.
-  export ZSH=/home/alisson/.oh-my-zsh
+  export ZSH=/home/apereira/.oh-my-zsh
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME="robbyrussell"
+ZSH_THEME="pygmalion"
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -49,6 +49,7 @@ HIST_STAMPS="mm/dd/yyyy"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git)
+plugins=(virtualenv)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -63,7 +64,7 @@ source $ZSH/oh-my-zsh.sh
  if [[ -n $SSH_CONNECTION ]]; then
    export EDITOR='vim'
  else
-   export EDITOR='mvim'
+   export EDITOR='nvim'
  fi
 
 # Compilation flags
@@ -80,10 +81,15 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+alias vim="/usr/bin/nvim"
+alias vi="/usr/bin/nvim"
+alias e="/usr/bin/nvim"
+alias pyenv="~/environment/python"
+alias vimconfig="nvim ~/.config/nvim/init.vim"
 
-export JAVA_HOME=/home/alisson/env/tools/jdk-9
-export MVN_HOME=/home/alisson/env/tools/apache-maven-3.5.0
-export MVN_REPO=/home/alisson/.m2
+export JAVA_HOME=/home/apereira/env/tools/jdk-9
+export MVN_HOME=/home/apereira/env/tools/apache-maven-3.5.0
+export MVN_REPO=/home/apereira/.m2
 
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:/usr/local/bin:$JAVA_HOME/bin:$MVN_HOME/bin:$PATH
