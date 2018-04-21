@@ -84,12 +84,13 @@ source $ZSH/oh-my-zsh.sh
 alias vim="/usr/bin/nvim"
 alias vi="/usr/bin/nvim"
 alias e="/usr/bin/nvim"
-alias pyenv="~/environment/python"
 alias vimconfig="nvim ~/.config/nvim/init.vim"
 
-export JAVA_HOME=/home/apereira/env/tools/jdk-9
-export MVN_HOME=/home/apereira/env/tools/apache-maven-3.5.0
+export JAVA_HOME=/home/apereira/environment/tools/jdk-8
+export MVN_HOME=/home/apereira/environment/tools/apache-maven-3.5.3
 export MVN_REPO=/home/apereira/.m2
+export PYCHARM_HOME=/home/apereira/environment/tools/pycharm-community-2018.1/
+export INTELLIJ_HOME=/home/apereira/environment/tools/idea-IC-181.4203.550
 
 # If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:/usr/local/bin:$JAVA_HOME/bin:$MVN_HOME/bin:$PATH
+export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$JAVA_HOME/bin:$MVN_HOME/bin:$PYCHARM_HOME/bin:$INTELLIJ_HOME/bin:$PATH
