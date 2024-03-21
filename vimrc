@@ -1,4 +1,4 @@
-set relativenumber
+""set relativenumber
 
 call plug#begin('~/.vim/plugins')
 Plug 'tpope/vim-commentary'
@@ -9,9 +9,11 @@ Plug 'jeffkreeftmeijer/vim-numbertoggle'
 Plug 'ntpeters/vim-better-whitespace' " StripWhitespaces trailing
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'junegunn/fzf'
+
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 
 Plug 'fatih/molokai'
+Plug 'altercation/vim-colors-solarized'
 "Plug 'morhetz/gruvbox'
 "Plug 'dracula/vim', { 'name': 'dracula' }
 
@@ -19,7 +21,11 @@ Plug 'SirVer/ultisnips'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 " Use release branch (recommend)
 "Plug 'neoclide/coc.nvim', {'branch': 'release'}
+"
+Plug 'github/copilot.vim'
 call plug#end()
+
+set runtimepath^=~/.vim/bundle/ctrlp.vim
 
 syntax on
 set ttyfast                                        "more characters will be sent to the screen for redrawing
@@ -40,9 +46,9 @@ set showcmd                                        "display incomplete commands
 set laststatus=2                                   "always display the status bar
 set number                                         "display line numbers
 set cursorline                                     "highlight current line
-set colorcolumn=81                                 "display text width column
-set splitbelow                                     "vertical splits will be at the bottom
-set splitright                                     "horizontal splits will be to the right
+set colorcolumn=100                                "display text width column
+""set splitbelow                                     "vertical splits will be at the bottom
+""set splitright                                     "horizontal splits will be to the right
 set autoindent                                     "always set autoindenting on
 set formatoptions-=cro                             "disable auto comments on new lines
 set tabstop=2 shiftwidth=2 softtabstop=2 expandtab "use two spaces for indentation
@@ -73,6 +79,9 @@ autocmd! FileType make setlocal ts=8 sts=8 sw=8 noexpandtab
 let g:rehash256=1
 let g:molokai_original=1
 colorscheme molokai
+"set background=light
+"colorscheme solarized
+
 
 "status line
 set statusline=%=%m\ %c\ %P\ %f\    "modifiedflag, charcount, filepercent, filepath
@@ -118,8 +127,11 @@ function! s:build_go_files()
 endfunction
 
 let g:go_list_type = "quickfix"
-let g:go_fmt_command = "goimports"
+"let g:go_fmt_command = "goimports"
 let g:go_fmt_fail_silently = 1
+
+let g:go_fmt_command="gopls"
+let g:go_gopls_gofumpt=1
 
 let g:go_def_mode='gopls'
 let g:go_info_mode='gopls'
@@ -155,14 +167,17 @@ augroup go
   au Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
   au Filetype go command! -bang AT call go#alternate#Switch(<bang>0, 'tabe')
 
-  au FileType go nmap <Leader>dd <Plug>(go-def-vertical)
+  au FileType go nmap <Leader>dd <Plug>(go-def)
+  au FileType go nmap <Leader>ss <Plug>(go-def-vertical)
   au FileType go nmap <Leader>dv <Plug>(go-doc-vertical)
   au FileType go nmap <Leader>db <Plug>(go-doc-browser)
 
   au FileType go nmap <leader>r  <Plug>(go-run)
   au FileType go nmap <leader>t  <Plug>(go-test)
+  au FileType go nmap <leader>tf  <Plug>(go-test-func)
   au FileType go nmap <Leader>gt <Plug>(go-coverage-toggle)
   au FileType go nmap <Leader>i <Plug>(go-info)
+  au FileType go nmap <Leader>gr <Plug>(go-rename)
   au FileType go nmap <silent> <Leader>l <Plug>(go-metalinter)
   au FileType go nmap <C-g> :GoDecls<cr>
   au FileType go nmap <leader>dr :GoDeclsDir<cr>
@@ -174,11 +189,17 @@ augroup go
 
 augroup END
 
+""available linters
+""'bingo', 'gobuild', 'gofmt', 'golangci-lint', 'golint', 'gometalinter', 'gopls', 'gosimple', 'gotype', 'govet', 'golangserver', 'staticcheck'
+""not available
+"", 'errcheck', 'stylecheck', 'goheader'
 " ale
 let g:ale_linters = {}
 " ale
 :call extend(g:ale_linters, {
-    \"go": ['golint', 'go vet'], })
+    \"go": ['golint', 'go vet', 'gofmt', 'staticcheck', 'gosimple'], })
+
+let g:go_metalinter_enabled = ['errcheck', 'stylecheck', 'goheader']
 
 """""" vim-go
 """""let g:go_def_mode='gopls'
@@ -221,11 +242,10 @@ nnoremap <silent> <C-k> :call WinMove('k')<cr>
 nnoremap <silent> <C-l> :call WinMove('l')<cr>
 
 
-
-"" fzf.vim
-set wildmode=list:longest,list:full
-set wildignore+=*.o,*.obj,.git,*.rbc,*.pyc,__pycache__
-let $FZF_DEFAULT_COMMAND =  "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
+"""" fzf.vim
+""set wildmode=list:longest,list:full
+""set wildignore+=*.o,*.obj,.git,*.rbc,*.pyc,__pycache__
+""let $FZF_DEFAULT_COMMAND =  "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
 
 function! WinMove(key)
   let t:curwin = winnr()
