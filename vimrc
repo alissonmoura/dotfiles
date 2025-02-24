@@ -36,7 +36,7 @@ set noswapfile
 set autoread                                       "automatically read changes in the file
 set hidden                                         "hide buffers instead of closing them even if they contain unwritten changes
 set backspace=indent,eol,start                     "make backspace behave properly in insert mode
-set clipboard=unnamedplus                          "requires has('unnamedplus') to be 1
+set clipboard=unnamed,unnamedplus                          "requires has('unnamedplus') to be 1
 set wildmenu                                       "better menu with completion in command mode
 set wildmode=longest:full,full
 set completeopt=longest,menuone,preview            "better insert mode completions
@@ -53,7 +53,7 @@ set autoindent                                     "always set autoindenting on
 set formatoptions-=cro                             "disable auto comments on new lines
 set tabstop=2 shiftwidth=2 softtabstop=2 expandtab "use two spaces for indentation
 set incsearch                                      "incremental search highlight
-set ignorecase                                     "searches are case insensitive...
+"set ignorecase                                     "searches are case insensitive...
 set smartcase                                      " ..unless they contain at least one capital letter
 set hlsearch                                       "highlight search patterns
 set mouse=a

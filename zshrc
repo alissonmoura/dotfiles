@@ -1,23 +1,36 @@
+
 # Path to your oh-my-zsh installation.
-  export ZSH=/home/apereira/.oh-my-zsh
+  export ZSH=/home/$USER/.oh-my-zsh
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
 ZSH_THEME="pygmalion"
+#ZSH_THEME="robbyrussell"
+
+# Set list of themes to pick from when loading at random
+# Setting this variable when ZSH_THEME=random will cause zsh to load
+# a theme from this variable instead of looking in $ZSH/themes/
+# If set to an empty array, this variable will have no effect.
+# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
 
-# Uncomment the following line to use hyphen-insensitive completion. Case
-# sensitive completion must be off. _ and - will be interchangeable.
+# Uncomment the following line to use hyphen-insensitive completion.
+# Case-sensitive completion must be off. _ and - will be interchangeable.
 # HYPHEN_INSENSITIVE="true"
 
-# Uncomment the following line to disable bi-weekly auto-update checks.
-# DISABLE_AUTO_UPDATE="true"
+# Uncomment one of the following lines to change the auto-update behavior
+# zstyle ':omz:update' mode disabled  # disable automatic updates
+# zstyle ':omz:update' mode auto      # update automatically without asking
+# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 
 # Uncomment the following line to change how often to auto-update (in days).
-# export UPDATE_ZSH_DAYS=13
+# zstyle ':omz:update' frequency 13
+
+# Uncomment the following line if pasting URLs and other text is messed up.
+# DISABLE_MAGIC_FUNCTIONS="true"
 
 # Uncomment the following line to disable colors in ls.
 # DISABLE_LS_COLORS="true"
@@ -29,6 +42,9 @@ ZSH_THEME="pygmalion"
 # ENABLE_CORRECTION="true"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
+# You can also set it to another string to have that shown instead of the default red dots.
+# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
+# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
 # COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
@@ -51,7 +67,14 @@ HIST_STAMPS="mm/dd/yyyy"
 plugins=(
   git
   virtualenv
+  ssh-agent
+  colorize
+  tldr
+  golang
 )
+
+export ZSH_COLORIZE_TOOL=chroma
+export ZSH_COLORIZE_CHROMA_FORMATTER=terminal256
 
 source $ZSH/oh-my-zsh.sh
 
@@ -62,12 +85,9 @@ source $ZSH/oh-my-zsh.sh
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
 
-# Preferred editor for local and remote sessions
- if [[ -n $SSH_CONNECTION ]]; then
-   export EDITOR='vim'
- else
-   export EDITOR='nvim'
- fi
+export EDITOR='nvim'
+
+export NVIM_HOME=/home/$USER/environ/tools/neovim_installation
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -83,16 +103,34 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias vim="/usr/bin/nvim"
-alias vi="/usr/bin/nvim"
-alias e="/usr/bin/nvim"
-alias vimconfig="nvim ~/.config/nvim/init.vim"
+alias vim="$NVIM_HOME/bin/nvim"
+alias vi="$NVIM_HOME/bin/nvim"
+alias e="$NVIM_HOME/bin/nvim"
+alias vimconfig="nvim ~/.config/nvim"
 
-export JAVA_HOME=/home/apereira/environment/tools/jdk-8
-export MVN_HOME=/home/apereira/environment/tools/apache-maven-3.5.3
-export MVN_REPO=/home/apereira/.m2
-export PYCHARM_HOME=/home/apereira/environment/tools/pycharm-community-2018.1/
-export INTELLIJ_HOME=/home/apereira/environment/tools/idea-IC-181.4203.550
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+#alias ls='exa -lag --header'
+alias tmux="tmux -2"
+alias tree='exa --tree'
+#alias go='grc go'
+
+export LESS='-R'
+export LESSOPEN='|~/.lessfilter %s'
+
+export GO_HOME=/home/$USER/go
+export MELD_HOME=/home/$USER/environ/tools/meld-3.22.2
 
 # If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$JAVA_HOME/bin:$MVN_HOME/bin:$PYCHARM_HOME/bin:$INTELLIJ_HOME/bin:$PATH
+export PATH=$HOME/bin:$HOME/.local/bin:$HOME/.local/kitty.app/bin:/usr/local/bin:$GO_HOME/bin:$MELD_HOME/bin:$PATH:/$NVIM_HOME/bin
+#export FPATH=:/home/$USER/.oh-my-zsh/plugins/cheat.zsh:$FPATH
+export CHEAT_USE_FZF=true
+
+if [ $TILIX_ID ] || [ $VTE_VERSION ]; then
+        source /etc/profile.d/vte.sh
+fi
+
+alias remove-proxy="unset http_proxy && unset HTTP_PROXY && unset https_proxy && unset HTTPS_PROXY"
+alias c4vpn="remove-proxy && pritunl-client-electron </dev/null &> /dev/null &"
+alias where-header="echo \"echo '#include <stdbool.h>' | cpp -H -o /dev/null 2>&1 | head -n1\""
