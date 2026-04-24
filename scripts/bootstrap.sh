@@ -4,6 +4,51 @@ set -euo pipefail
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BACKUP_DIR="$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
 PKG_MANAGER=""
+TARGET_OS="auto"
+
+usage() {
+  cat <<'EOF'
+Usage: bootstrap.sh [--os auto|linux|macos] [--help]
+
+Options:
+  --os      Target OS behavior. Defaults to auto.
+  --help    Show this help.
+EOF
+}
+
+parse_args() {
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --os)
+        if [ "$#" -lt 2 ]; then
+          warn "Missing value for --os"
+          usage
+          exit 1
+        fi
+        TARGET_OS="$2"
+        shift 2
+        ;;
+      --help|-h)
+        usage
+        exit 0
+        ;;
+      *)
+        warn "Unknown argument: $1"
+        usage
+        exit 1
+        ;;
+    esac
+  done
+
+  case "$TARGET_OS" in
+    auto|linux|macos)
+      ;;
+    *)
+      warn "Invalid --os value: $TARGET_OS (expected: auto|linux|macos)"
+      exit 1
+      ;;
+  esac
+}
 
 log() {
   printf '[dotfiles] %s\n' "$*"
@@ -174,7 +219,14 @@ set_default_shell() {
   fi
 
   desired_shell="$(command -v zsh)"
-  current_shell="$(getent passwd "$USER" | cut -d: -f7 || true)"
+
+  if command -v getent >/dev/null 2>&1; then
+    current_shell="$(getent passwd "$USER" | cut -d: -f7 || true)"
+  elif [ "$(uname -s)" = "Darwin" ] && command -v dscl >/dev/null 2>&1; then
+    current_shell="$(dscl . -read "/Users/$USER" UserShell 2>/dev/null | awk '{print $2}' || true)"
+  else
+    current_shell="${SHELL:-}"
+  fi
 
   if [ "$current_shell" != "$desired_shell" ]; then
     if command -v chsh >/dev/null 2>&1; then
@@ -192,16 +244,44 @@ main() {
   log "Starting bootstrap from $DOTFILES_DIR"
   mkdir -p "$BACKUP_DIR"
 
+  parse_args "$@"
+
+  local effective_os
+  if [ "$TARGET_OS" = "auto" ]; then
+    case "$(uname -s)" in
+      Darwin)
+        effective_os="macos"
+        ;;
+      *)
+        effective_os="linux"
+        ;;
+    esac
+  else
+    effective_os="$TARGET_OS"
+  fi
+
+  log "Using OS profile: $effective_os"
+
   PKG_MANAGER="$(detect_pkg_manager)"
   log "Detected package manager: $PKG_MANAGER"
 
-  install_packages
+  if [ "$effective_os" = "linux" ]; then
+    install_packages
+  else
+    log "Skipping Linux package installation for macOS profile"
+  fi
   install_oh_my_zsh
   install_tpm
   link_dotfiles
   install_tmux_plugins
   install_nvim_plugins
   set_default_shell
+
+  # Apply GNOME desktop settings (skips gracefully on non-GNOME)
+  if [ "$effective_os" = "linux" ] && [ -x "$DOTFILES_DIR/scripts/gnome-settings.sh" ]; then
+    log "Applying GNOME settings"
+    "$DOTFILES_DIR/scripts/gnome-settings.sh"
+  fi
 
   log "Bootstrap complete"
   log "Restart your shell session or run: exec zsh"
