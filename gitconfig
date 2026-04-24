@@ -9,7 +9,7 @@
 
 [user]
 	email = alisson.belas@gmail.com
-	name = Alisson Moura
+	name = Alisson Pereira
 
 [diff]
 	tool = meld
@@ -17,3 +17,10 @@
 	prompt = false
 [difftool "meld"]
 	cmd = meld "$LOCAL" "$REMOTE"
+[core]
+	editor = vim
+	autocrlf = false
+[color]
+	ui = auto
+[submodule]
+	recurse = true
