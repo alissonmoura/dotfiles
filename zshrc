@@ -5,7 +5,7 @@
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME="pygmalion"
+ZSH_THEME="catppuccin_macchiato"
 #ZSH_THEME="robbyrussell"
 
 # Set list of themes to pick from when loading at random
@@ -104,9 +104,15 @@ export NVIM_HOME=/home/$USER/environ/tools/neovim_installation
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias vim="$NVIM_HOME/bin/nvim"
-alias vi="$NVIM_HOME/bin/nvim"
-alias e="$NVIM_HOME/bin/nvim"
+if [ -x "$NVIM_HOME/bin/nvim" ]; then
+  alias vim="$NVIM_HOME/bin/nvim"
+  alias vi="$NVIM_HOME/bin/nvim"
+  alias e="$NVIM_HOME/bin/nvim"
+else
+  alias vim="nvim"
+  alias vi="nvim"
+  alias e="nvim"
+fi
 alias vimconfig="nvim ~/.config/nvim"
 
 alias rm='rm -i'
@@ -128,7 +134,7 @@ export OPENSPEC_TELEMETRY=0
 
 
 # If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:$HOME/.local/bin:$HOME/.local/kitty.app/bin:/usr/local/bin:$GO_HOME/bin:$MELD_HOME/bin:/$NVIM_HOME/bin:$PLATFORM_TOOLS:$PATH
+export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$GO_HOME/bin:$MELD_HOME/bin:$NVIM_HOME/bin:$PLATFORM_TOOLS:$PATH
 #export FPATH=:/home/$USER/.oh-my-zsh/plugins/cheat.zsh:$FPATH
 export CHEAT_USE_FZF=true
 

@@ -1,0 +1,7 @@
+# Ghostty terminal configuration
+# Uses Catppuccin Macchiato by default.
+theme = Catppuccin Macchiato
+font-size = 12
+window-padding-x = 6
+window-padding-y = 6
+copy-on-select = clipboard
