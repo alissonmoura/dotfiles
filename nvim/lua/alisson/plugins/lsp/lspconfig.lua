@@ -192,6 +192,6 @@ return {
       }),
     })
 
-    vim.lsp.set_log_level("debug")
+    vim.lsp.log.set_level("debug")
   end,
 }

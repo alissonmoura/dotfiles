@@ -80,16 +80,115 @@ detect_pkg_manager() {
   fi
 }
 
+install_apt_packages_if_available() {
+  local available_packages=()
+  local package
+
+  for package in "$@"; do
+    if apt-cache show "$package" >/dev/null 2>&1; then
+      available_packages+=("$package")
+    else
+      warn "apt package not found: $package"
+    fi
+  done
+
+  if [ "${#available_packages[@]}" -gt 0 ]; then
+    run_as_root apt-get install -y "${available_packages[@]}"
+  fi
+}
+
+configure_brave_apt_repository() {
+  local arch
+  local distro_id
+  distro_id="$(
+    . /etc/os-release
+    echo "${ID:-}"
+  )"
+
+  if [ "$distro_id" != "ubuntu" ]; then
+    warn "Brave apt repository setup is only configured for Ubuntu. Skipping."
+    return
+  fi
+
+  arch="$(dpkg --print-architecture)"
+
+  run_as_root install -m 0755 -d /etc/apt/keyrings
+  run_as_root curl -fsSL \
+    https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg \
+    -o /etc/apt/keyrings/brave-browser-archive-keyring.gpg
+  printf 'deb [signed-by=/etc/apt/keyrings/brave-browser-archive-keyring.gpg arch=%s] https://brave-browser-apt-release.s3.brave.com/ stable main\n' \
+    "$arch" | run_as_root tee /etc/apt/sources.list.d/brave-browser-release.list >/dev/null
+}
+
+configure_docker_apt_repository() {
+  local arch
+  local codename
+  local distro_id
+  distro_id="$(
+    . /etc/os-release
+    echo "${ID:-}"
+  )"
+
+  if [ "$distro_id" != "ubuntu" ]; then
+    warn "Docker apt repository setup is only configured for Ubuntu. Skipping."
+    return
+  fi
+
+  arch="$(dpkg --print-architecture)"
+  codename="$(
+    . /etc/os-release
+    echo "${UBUNTU_CODENAME:-${VERSION_CODENAME:-}}"
+  )"
+
+  if [ -z "$codename" ]; then
+    warn "Could not determine Ubuntu codename. Docker repository setup skipped."
+    return
+  fi
+
+  run_as_root install -m 0755 -d /etc/apt/keyrings
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+    | run_as_root gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  run_as_root chmod a+r /etc/apt/keyrings/docker.gpg
+  printf 'deb [arch=%s signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu %s stable\n' \
+    "$arch" "$codename" | run_as_root tee /etc/apt/sources.list.d/docker.list >/dev/null
+}
+
+install_snap_packages() {
+  local package
+
+  if ! command -v snap >/dev/null 2>&1; then
+    warn "snap command not found. Skipping ghostty/go/nvim snap installation."
+    return
+  fi
+
+  for package in ghostty go nvim; do
+    if snap list "$package" >/dev/null 2>&1; then
+      log "Snap package already installed: $package"
+      continue
+    fi
+
+    if ! run_as_root snap install "$package" --classic; then
+      warn "Failed to install snap package: $package"
+    fi
+  done
+}
+
 install_packages() {
   case "$PKG_MANAGER" in
     apt)
       run_as_root apt-get update
-      run_as_root apt-get install -y git curl zsh tmux neovim xclip
-      if apt-cache show ghostty >/dev/null 2>&1; then
-        run_as_root apt-get install -y ghostty
-      else
-        warn "ghostty package not found in apt repositories. Install it manually from https://ghostty.org/docs/install/"
-      fi
+      run_as_root apt-get install -y ca-certificates curl gnupg
+      configure_brave_apt_repository
+      configure_docker_apt_repository
+      run_as_root apt-get update
+      install_apt_packages_if_available \
+        git curl zsh tmux xclip \
+        apt-transport-https ca-certificates wget gnupg gpg unzip \
+        build-essential fontconfig \
+        python3-pip python3-venv python3.12-venv python3-isort \
+        tree-sitter-cli chromium-browser brave-browser \
+        docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+      install_snap_packages
       ;;
     dnf)
       run_as_root dnf install -y git curl zsh tmux neovim xclip
@@ -201,9 +300,17 @@ install_tmux_plugins() {
 }
 
 install_nvim_plugins() {
+  local nvim_bin=""
+
   if command -v nvim >/dev/null 2>&1; then
+    nvim_bin="$(command -v nvim)"
+  elif [ -x /snap/bin/nvim ]; then
+    nvim_bin="/snap/bin/nvim"
+  fi
+
+  if [ -n "$nvim_bin" ]; then
     log "Syncing Neovim plugins"
-    nvim --headless "+Lazy! sync" +qa || warn "Failed to sync Neovim plugins automatically"
+    "$nvim_bin" --headless "+Lazy! sync" +qa || warn "Failed to sync Neovim plugins automatically"
   else
     warn "Neovim not found in PATH. Plugin sync skipped."
   fi

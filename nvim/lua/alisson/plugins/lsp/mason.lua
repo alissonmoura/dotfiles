@@ -50,7 +50,7 @@ return {
         "gofumpt",
         "gomodifytags",
         "impl",
-        --        "goimports-reviser",
+        "goimports-reviser",
       },
     })
   end,

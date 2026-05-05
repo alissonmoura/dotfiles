@@ -5,3 +5,16 @@ font-size = 12
 window-padding-x = 6
 window-padding-y = 6
 copy-on-select = clipboard
+font-family = "JetBrainsMono Nerd Font"
+unfocused-split-opacity = 0.6
+
+# tmux-like split workflow: Ctrl+Space, then Ctrl+v / Ctrl+s
+keybind = ctrl+space>ctrl+shift+v=new_split:down
+keybind = ctrl+space>ctrl+shift+s=new_split:right
+
+# tmux-style panel navigation
+keybind = ctrl+shift+h=goto_split:left
+keybind = ctrl+shift+j=goto_split:down
+keybind = ctrl+shift+k=goto_split:up
+keybind = ctrl+shift+l=goto_split:right
+keybind = ctrl+shift+backslash=goto_split:previous

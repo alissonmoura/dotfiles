@@ -19,8 +19,9 @@ bash ./scripts/bootstrap.sh
 
 The script will:
 
-- install base packages (`git`, `curl`, `zsh`, `tmux`, `neovim`, `xclip`)
-- attempt to install `ghostty` (and warn if unavailable in your distro repos)
+- install Ubuntu apt packages for your workstation setup (`git`, `curl`, `zsh`, `tmux`, `xclip`, `apt-transport-https`, `ca-certificates`, `wget`, `gnupg`, `gpg`, `unzip`, `fontconfig`, `build-essential`, `python3-pip`, `python3-venv`, `python3.12-venv`, `python3-isort`, `tree-sitter-cli`, `chromium-browser`)
+- configure Brave and Docker apt repositories, then install `brave-browser`, `docker-ce`, `docker-ce-cli`, `containerd.io`, `docker-buildx-plugin`, `docker-compose-plugin`
+- install snap packages `ghostty`, `go`, and `nvim` (classic confinement)
 - install Oh My Zsh
 - install TPM (tmux plugin manager)
 - symlink dotfiles to your home config paths
@@ -48,4 +49,3 @@ Existing files in your home directory are backed up under:
 color.sh dark
 color.sh light
 ```
-

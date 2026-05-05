@@ -4,6 +4,11 @@ return {
   config = function()
     local lualine = require("lualine")
     local lazy_status = require("lazy.status") -- to configure lazy pending updates count
+    
+    -- Disable notices to avoid vim.version.ge incompatibility in v0.12.2
+    pcall(function()
+      require("lualine.utils.notices").disable_notices()
+    end)
 
     local colors = {
       blue = "#65D1FF",
@@ -52,8 +57,8 @@ return {
     -- configure lualine with modified theme
     lualine.setup({
       options = {
-        --theme = my_lualine_theme,
-        theme = "catppuccin",
+        theme = my_lualine_theme,
+        --theme = "catppuccin",
       },
       sections = {
         lualine_x = {

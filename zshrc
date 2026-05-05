@@ -120,6 +120,7 @@ alias cp='cp -i'
 alias mv='mv -i'
 alias tmux="tmux -2"
 alias tree='exa --tree'
+alias ls='exa'
 alias 'got'='grc go test'
 
 export LESS='-R'
@@ -138,11 +139,7 @@ export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$GO_HOME/bin:$MELD_HOME/bi
 #export FPATH=:/home/$USER/.oh-my-zsh/plugins/cheat.zsh:$FPATH
 export CHEAT_USE_FZF=true
 
-if [ $TILIX_ID ] || [ $VTE_VERSION ]; then
-        source /etc/profile.d/vte.sh
-fi
 
-export PATH="$PATH:${HOME}/.local/TokenUpdater"
 
 
 git() {
@@ -168,31 +165,9 @@ git() {
 
 
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-# place this after nvm initialization!
-autoload -U add-zsh-hook
-
-load-nvmrc() {
-  local nvmrc_path
-  nvmrc_path="$(nvm_find_nvmrc)"
-
-  if [ -n "$nvmrc_path" ]; then
-    local nvmrc_node_version
-    nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
-
-    if [ "$nvmrc_node_version" = "N/A" ]; then
-      nvm install
-    elif [ "$nvmrc_node_version" != "$(nvm version)" ]; then
-      nvm use
-    fi
-  elif [ -n "$(PWD=$OLDPWD nvm_find_nvmrc)" ] && [ "$(nvm version)" != "$(nvm version default)" ]; then
-    echo "Reverting to nvm default version"
-    nvm use default
-  fi
-}
-
-add-zsh-hook chpwd load-nvmrc
-load-nvmrc
+# fnm
+FNM_PATH="/home/amourabe/.local/share/fnm"
+if [ -d "$FNM_PATH" ]; then
+  export PATH="$FNM_PATH:$PATH"
+  eval "$(fnm env --shell zsh)"
+fi
