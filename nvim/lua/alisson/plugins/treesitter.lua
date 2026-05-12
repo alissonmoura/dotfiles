@@ -1,8 +1,9 @@
 return {
   "nvim-treesitter/nvim-treesitter",
-  event = { "BufReadPre", "BufNewFile" },
-  build = ":TSUpdate",
+  branch = "main",
+  lazy = false,
   dependencies = {
+    "neovim-treesitter/treesitter-parser-registry",
     "windwp/nvim-ts-autotag",
     {
       "nvim-treesitter/nvim-treesitter-context", -- Show code context
@@ -14,50 +15,56 @@ return {
     },
   },
   config = function()
-    -- import nvim-treesitter plugin
-    local treesitter = require("nvim-treesitter.configs")
+    local treesitter = require("nvim-treesitter")
+    -- "vim" and "vimdoc" are bundled with Neovim 0.12+ (parser + queries)
+    -- so we skip them here to avoid query incompatibilities.
+    local parsers = {
+      "json",
+      "yaml",
+      "html",
+      "markdown",
+      "markdown_inline",
+      "bash",
+      "lua",
+      "dockerfile",
+      "gitignore",
+      "query",
+      "c",
+      "go",
+      "gomod",
+      "gowork",
+      "gosum",
+      "cmake",
+    }
+    local parser_set = {}
 
-    -- configure treesitter
-    treesitter.setup({ -- enable syntax highlighting
-      highlight = {
-        enable = true,
-      },
-      -- enable indentation
-      indent = { enable = true },
-      -- enable autotagging (w/ nvim-ts-autotag plugin)
-      autotag = {
-        enable = true,
-      },
-      -- ensure these language parsers are installed
-      ensure_installed = {
-        "json",
-        "yaml",
-        "html",
-        "markdown",
-        "markdown_inline",
-        "bash",
-        "lua",
-        "vim",
-        "dockerfile",
-        "gitignore",
-        "query",
-        "vimdoc",
-        "c",
-        "go",
-        "gomod",
-        "gowork",
-        "gosum",
-        "cmake",
-      },
-      incremental_selection = {
-        enable = true,
-        keymaps = {
-          init_selection = "<C-space>",
-          node_incremental = "<C-space>",
-          scope_incremental = false,
-          node_decremental = "<bs>",
-        },
-      },
+    for _, parser in ipairs(parsers) do
+      parser_set[parser] = true
+    end
+
+    local function enable_treesitter(buf)
+      local ft = vim.bo[buf].filetype
+      local parser = vim.treesitter.language.get_lang(ft) or ft
+
+      if parser_set[parser] then
+        vim.treesitter.start(buf)
+        vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+      end
+    end
+
+    treesitter.setup({})
+    require("nvim-ts-autotag").setup({})
+
+    vim.api.nvim_create_autocmd("FileType", {
+      callback = function(args)
+        enable_treesitter(args.buf)
+      end,
     })
+
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+      if vim.api.nvim_buf_is_loaded(buf) then
+        enable_treesitter(buf)
+      end
+    end
   end,
 }

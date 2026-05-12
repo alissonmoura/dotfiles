@@ -120,13 +120,12 @@ alias cp='cp -i'
 alias mv='mv -i'
 alias tmux="tmux -2"
 alias tree='exa --tree'
-alias ls='exa'
 alias 'got'='grc go test'
 
 export LESS='-R'
 export LESSOPEN='|~/.lessfilter %s'
 
-export GO_HOME=/home/$USER/go
+export GO_HOME=/usr/local/go
 export MELD_HOME=/home/$USER/environ/tools/meld-3.22.2
 export PLATFORM_TOOLS=/opt/platform-tools
 
@@ -135,11 +134,9 @@ export OPENSPEC_TELEMETRY=0
 
 
 # If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$GO_HOME/bin:$MELD_HOME/bin:$NVIM_HOME/bin:$PLATFORM_TOOLS:$PATH
+export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$GO_HOME/bin:$MELD_HOME/bin:$NVIM_HOME/bin:$PLATFORM_TOOLS:/opt/nvim-linux-x86_64/bin:$PATH
 #export FPATH=:/home/$USER/.oh-my-zsh/plugins/cheat.zsh:$FPATH
 export CHEAT_USE_FZF=true
-
-
 
 
 git() {

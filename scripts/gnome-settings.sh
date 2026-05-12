@@ -68,4 +68,9 @@ log "Configuring input settings"
 gsettings set org.gnome.desktop.peripherals.keyboard numlock-state true
 gsettings set org.gnome.desktop.peripherals.touchpad two-finger-scrolling-enabled true
 
+# ---------------------------------------------------------------------------
+# Terminal 
+# ---------------------------------------------------------------------------
+gsettings set org.gnome.desktop.default-applications.terminal exec 'ghostty'   
+
 log "GNOME settings applied"

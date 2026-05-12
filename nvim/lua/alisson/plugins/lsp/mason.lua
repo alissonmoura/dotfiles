@@ -51,6 +51,7 @@ return {
         "gomodifytags",
         "impl",
         "goimports-reviser",
+        "tree-sitter-cli",
       },
     })
   end,

@@ -4,11 +4,24 @@ return {
   config = function()
     local lualine = require("lualine")
     local lazy_status = require("lazy.status") -- to configure lazy pending updates count
-    
+
     -- Disable notices to avoid vim.version.ge incompatibility in v0.12.2
     pcall(function()
       require("lualine.utils.notices").disable_notices()
     end)
+
+    local function noice_mode()
+      local ok, noice = pcall(require, "noice")
+      if ok and noice.api.statusline.mode.has() then
+        return noice.api.statusline.mode.get()
+      end
+      return ""
+    end
+
+    local function has_noice_mode()
+      local ok, noice = pcall(require, "noice")
+      return ok and noice.api.statusline.mode.has()
+    end
 
     local colors = {
       blue = "#65D1FF",
@@ -19,6 +32,7 @@ return {
       fg = "#c3ccdc",
       bg = "#112638",
       inactive_bg = "#2c3043",
+      semilightgray = "#a0a9b7",
     }
 
     local my_lualine_theme = {
@@ -62,6 +76,11 @@ return {
       },
       sections = {
         lualine_x = {
+          {
+            noice_mode,
+            cond = has_noice_mode,
+            color = { fg = "#ff9e64" },
+          },
           {
             lazy_status.updates,
             cond = lazy_status.has_updates,

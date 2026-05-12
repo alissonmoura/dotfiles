@@ -2,7 +2,6 @@ return {
   "alissonmoura/log-highlight.nvim",
   branch = "main",
   name = "log-highlight",
-  dev = { true },
   config = function()
     require("log-highlight").setup({
       -- The following options support either a string or a table of strings.

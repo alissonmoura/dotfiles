@@ -1,9 +1,9 @@
 return {
   "neovim/nvim-lspconfig",
-  event = { "BufReadPre", "BufNewFile" },
+  lazy = false,
   dependencies = {
     { "antosha417/nvim-lsp-file-operations", config = true },
-    { "folke/neodev.nvim", opts = {} },
+    { "folke/lazydev.nvim", opts = {} },
 
     -- Autocompletion
     { "hrsh7th/nvim-cmp" }, -- Required
@@ -57,10 +57,10 @@ return {
         --keymap.set("n", "<leader>d", vim.diagnostic.open_float, opts) -- show diagnostics for line
 
         opts.desc = "Go to previous diagnostic"
-        keymap.set("n", "[d", vim.diagnostic.goto_prev, opts) -- jump to previous diagnostic in buffer
+        keymap.set("n", "[d", function() vim.diagnostic.jump({ count = -1 }) end, opts)
 
         opts.desc = "Go to next diagnostic"
-        keymap.set("n", "]d", vim.diagnostic.goto_next, opts) -- jump to next diagnostic in buffer
+        keymap.set("n", "]d", function() vim.diagnostic.jump({ count = 1 }) end, opts)
 
         opts.desc = "Show documentation for what is under cursor"
         keymap.set("n", "K", vim.lsp.buf.hover, opts) -- show documentation for what is under cursor
@@ -146,11 +146,9 @@ return {
       },
     })
 
-    --local cmp_action = require("lsp-zero").cmp_action()
-    local cmp = require("cmp")
-    --local cmp_select = { behavior = cmp.SelectBehavior.Select }
+    vim.lsp.enable({ "lua_ls", "gopls", "tailwindcss", "pyright", "clangd", "bashls" })
 
-    require("luasnip.loaders.from_vscode").lazy_load()
+    local cmp = require("cmp")
 
     -- `/` cmdline setup.
     cmp.setup.cmdline("/", {
@@ -174,24 +172,5 @@ return {
         },
       }),
     })
-
-    cmp.setup({
-      snippet = {
-        expand = function(args)
-          require("luasnip").lsp_expand(args.body)
-        end,
-      },
-      sources = {
-        { name = "nvim_lsp" },
-        { name = "luasnip", keyword_length = 2 },
-        { name = "buffer", keyword_length = 3 },
-        { name = "path" },
-      },
-      mapping = cmp.mapping.preset.insert({
-        ["<C-Space>"] = cmp.mapping.complete(),
-      }),
-    })
-
-    vim.lsp.log.set_level("debug")
   end,
 }
